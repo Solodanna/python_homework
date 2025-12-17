@@ -1,0 +1,12 @@
+function: func1
+positional parameters: none
+keyword parameters: none
+return: None
+function: func2
+positional parameters: [1, 2, 3]
+keyword parameters: none
+return: True
+function: func3
+positional parameters: none
+keyword parameters: {'a': 1, 'b': 2}
+return: <function logger_decorator at 0x00000238624278A0>
