@@ -1,9 +1,11 @@
 import sqlite3
 import os
+from datetime import date
 
 # Assignment 9: Advanced SQL
 # Task 1: Complex JOINs with Aggregation - Find total price of first 5 orders
 # Task 2: Understanding Subqueries - Find average order price per customer
+# Task 3: An Insert Transaction Based on Data - Create an order with line items
 
 def task1_order_totals(cursor):
     """Task 1: Complex JOINs with Aggregation
@@ -53,10 +55,72 @@ def task2_customer_average_orders(cursor):
     return cursor.fetchall()
 
 
+def task3_insert_order_transaction(cursor, conn):
+    """Task 3: An Insert Transaction Based on Data
+    Create a new order for 'Perez and Sons' employee 'Miranda Harris'
+    with 10 of each of the 5 least expensive products.
+    """
+    try:
+        # Start transaction
+        conn.execute("BEGIN TRANSACTION")
+        
+        # Get customer_id for 'Perez and Sons'
+        cursor.execute("SELECT customer_id FROM customers WHERE customer_name = ?", 
+                       ("Perez and Sons",))
+        customer_id = cursor.fetchone()[0]
+        
+        # Get employee_id for 'Miranda Harris'
+        cursor.execute("SELECT employee_id FROM employees WHERE first_name = ? AND last_name = ?", 
+                       ("Miranda", "Harris"))
+        employee_id = cursor.fetchone()[0]
+        
+        # Get 5 least expensive products
+        cursor.execute("SELECT product_id FROM products ORDER BY price ASC LIMIT 5")
+        product_ids = [row[0] for row in cursor.fetchall()]
+        
+        # Insert order and get order_id using RETURNING
+        order_date = str(date.today())
+        cursor.execute(
+            "INSERT INTO orders (customer_id, employee_id, date) VALUES (?, ?, ?) RETURNING order_id",
+            (customer_id, employee_id, order_date)
+        )
+        order_id = cursor.fetchone()[0]
+        
+        # Insert 5 line items (10 of each product)
+        for product_id in product_ids:
+            cursor.execute(
+                "INSERT INTO line_items (order_id, product_id, quantity) VALUES (?, ?, ?)",
+                (order_id, product_id, 10)
+            )
+        
+        # Commit transaction
+        conn.commit()
+        
+        # Retrieve and return the order details
+        cursor.execute("""
+            SELECT 
+                line_items.line_item_id,
+                line_items.quantity,
+                products.product_name
+            FROM line_items
+            JOIN products ON line_items.product_id = products.product_id
+            WHERE line_items.order_id = ?
+            ORDER BY line_items.line_item_id
+        """, (order_id,))
+        
+        return cursor.fetchall(), order_id
+        
+    except sqlite3.Error as e:
+        conn.rollback()
+        print(f"Transaction failed: {e}")
+        return None, None
+
+
 def main():
     # Open the database
     db_path = "../db/lesson.db"
     conn = sqlite3.connect(db_path)
+    conn.execute("PRAGMA foreign_keys = 1")
     cursor = conn.cursor()
     
     # Task 1: Find total price of first 5 orders
@@ -80,6 +144,25 @@ def main():
             print(f"{row[0]:22s} | ${row[1]:10.2f}")
         else:
             print(f"{row[0]:22s} | None")
+    
+    print("\n" + "=" * 50)
+    print("Task 3: An Insert Transaction Based on Data")
+    print("=" * 50)
+    results, order_id = task3_insert_order_transaction(cursor, conn)
+    
+    if results and order_id:
+        print(f"Created order {order_id} for Perez and Sons")
+        print("\nLine Item ID | Quantity | Product Name")
+        print("-------------|----------|--------------------")
+        for row in results:
+            print(f"{row[0]:12d} | {row[1]:8d} | {row[2]}")
+        
+        # Clean up: delete the line items and order we just created
+        print("\nCleaning up order...")
+        cursor.execute("DELETE FROM line_items WHERE order_id = ?", (order_id,))
+        cursor.execute("DELETE FROM orders WHERE order_id = ?", (order_id,))
+        conn.commit()
+        print(f"Deleted order {order_id} and its line items.")
     
     # Close the database
     conn.close()
