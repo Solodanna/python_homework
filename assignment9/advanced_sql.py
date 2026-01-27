@@ -6,6 +6,7 @@ from datetime import date
 # Task 1: Complex JOINs with Aggregation - Find total price of first 5 orders
 # Task 2: Understanding Subqueries - Find average order price per customer
 # Task 3: An Insert Transaction Based on Data - Create an order with line items
+# Task 4: Aggregation with HAVING - Find employees with more than 5 orders
 
 def task1_order_totals(cursor):
     """Task 1: Complex JOINs with Aggregation
@@ -116,6 +117,28 @@ def task3_insert_order_transaction(cursor, conn):
         return None, None
 
 
+def task4_employees_with_many_orders(cursor):
+    """Task 4: Aggregation with HAVING
+    Find all employees associated with more than 5 orders.
+    Returns employee_id, first_name, last_name, and order_count.
+    """
+    sql = '''
+    SELECT 
+        employees.employee_id,
+        employees.first_name,
+        employees.last_name,
+        COUNT(orders.order_id) as order_count
+    FROM employees
+    LEFT JOIN orders ON employees.employee_id = orders.employee_id
+    GROUP BY employees.employee_id, employees.first_name, employees.last_name
+    HAVING COUNT(orders.order_id) > 5
+    ORDER BY employees.first_name, employees.last_name
+    '''
+    
+    cursor.execute(sql)
+    return cursor.fetchall()
+
+
 def main():
     # Open the database
     db_path = "../db/lesson.db"
@@ -163,6 +186,15 @@ def main():
         cursor.execute("DELETE FROM orders WHERE order_id = ?", (order_id,))
         conn.commit()
         print(f"Deleted order {order_id} and its line items.")
+    
+    print("\n" + "=" * 50)
+    print("Task 4: Aggregation with HAVING")
+    print("=" * 50)
+    print("Employee ID | First Name | Last Name | Order Count")
+    print("------------|------------|-----------|------------")
+    results = task4_employees_with_many_orders(cursor)
+    for row in results:
+        print(f"{row[0]:11d} | {row[1]:10s} | {row[2]:9s} | {row[3]:11d}")
     
     # Close the database
     conn.close()
