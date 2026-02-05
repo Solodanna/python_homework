@@ -206,7 +206,14 @@ if __name__ == "__main__":
     print(df.to_string(index=False))
     print()
     
-    # Optional: Save to CSV
-    output_file = "books.csv"
-    df.to_csv(output_file, index=False)
-    print(f"Results saved to {output_file}")
+    # TASK 4: Write the DataFrame to CSV file
+    csv_file = "assignment10/get_books.csv"
+    df.to_csv(csv_file, index=False)
+    print(f"Results saved to {csv_file}")
+    
+    # TASK 4: Write the results list to JSON file
+    json_file = "assignment10/get_books.json"
+    with open(json_file, 'w', encoding='utf-8') as f:
+        json.dump(all_results, f, indent=2, ensure_ascii=False)
+    print(f"Results saved to {json_file}")
+    print()
