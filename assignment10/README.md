@@ -1,11 +1,13 @@
 # Assignment 10: Web Scraping - Durham County Library
 
 ## Overview
+
 This assignment involves ethical web scraping of the Durham County Library book search to extract book information.
 
 ## Tasks Completed
 
 ### Task 1: Review robots.txt to Ensure Policy Compliance ✓
+
 - **File**: [get_books.py](get_books.py#L11-L13)
 - Verified compliance with Durham County Library's robots.txt policy
 - Public content is allowed (not under /staff/ directory)
@@ -13,6 +15,7 @@ This assignment involves ethical web scraping of the Durham County Library book 
 - robots.txt link: https://durhamcountylibrary.org/robots.txt
 
 ### Task 2: Understanding HTML and the DOM for the Durham Library Site ✓
+
 - **File**: [get_books.py](get_books.py#L15-L22)
 - Located search result `<li>` elements with class: `cp-search-result-item` and `row`
 - Found title element: `<h3>` tag within `cp-deprecated-bib-brief` div
@@ -20,6 +23,7 @@ This assignment involves ethical web scraping of the Durham County Library book 
 - Found format/year element: `<span>` with class `display-info`
 
 ### Task 3: Main Implementation ✓
+
 - **File**: [get_books.py](get_books.py#L43-L116)
 - Implemented `scrape_books()` function that:
   1. Loads the Durham County Library search page
@@ -36,6 +40,7 @@ This assignment involves ethical web scraping of the Durham County Library book 
   7. Saves results to `books.csv`
 
 ### For Further Thought: Pagination ✓
+
 - **File**: [get_books.py](get_books.py#L133-L175)
 - Implemented pagination logic to detect additional pages
 - Script respects robots.txt by using delays between requests
@@ -67,6 +72,7 @@ python get_books.py
 ## Ethical Considerations
 
 This scraper follows web scraping best practices:
+
 - ✓ Verifies robots.txt compliance
 - ✓ Uses appropriate User-Agent header
 - ✓ Includes delays between page requests (configurable)
