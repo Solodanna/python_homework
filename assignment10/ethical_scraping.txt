@@ -1,0 +1,123 @@
+ETHICAL WEB SCRAPING: WIKIPEDIA ROBOTS.TXT ANALYSIS
+=====================================================
+
+TASK 5: Analysis of Wikipedia's robots.txt File
+
+================================================================================
+QUESTION 1: Which sections of the website are restricted for crawling?
+================================================================================
+
+Wikipedia restricts crawling of the following sections:
+
+1. ADMINISTRATIVE AND MODERATION PAGES:
+   - Articles for deletion (/wiki/Wikipedia:Articles_for_deletion/)
+   - Votes for deletion (/wiki/Wikipedia:Votes_for_deletion/)
+   - Pages for deletion (/wiki/Wikipedia:Pages_for_deletion/)
+   - Deletion reviews (/wiki/Wikipedia:Deletion_review)
+   - Copyright problems pages (/wiki/Wikipedia:Copyright_problems)
+   - Protected titles (/wiki/Wikipedia:Protected_titles/)
+   - Arbitration requests (/wiki/Wikipedia:Requests_for_arbitration/)
+
+2. ADMINISTRATIVE INFRASTRUCTURE:
+   - Special pages (/wiki/Special:)
+   - Spam blacklist (/wiki/MediaWiki:Spam-blacklist)
+   - Administrator noticeboards (/wiki/Wikipedia:Administrators%27_noticeboard)
+   - Bureaucrat noticeboards (/wiki/Wikipedia:Bureaucrats%27_noticeboard)
+   - Sockpuppet investigations (/wiki/Wikipedia:Sockpuppet_investigations)
+
+3. INTERNAL APIs:
+   - General API paths (/api/)
+   - General wiki editing paths (/w/)
+   - With exceptions for specific API endpoints:
+     * /w/api.php?action=mobileview (ALLOWED)
+     * /w/load.php? (ALLOWED)
+     * /api/rest_v1/?doc (ALLOWED for documentation)
+
+4. TRAP AND REDIRECT PAGES:
+   - /trap/ (designed to catch bad crawlers)
+
+5. SPECIAL LANGUAGE VARIANTS:
+   - User pages across all language versions (/wiki/Käyttäjä:, /wiki/Bruker:, etc.)
+   - Language-specific deletion and discussion pages
+   - Various administrative pages in multiple languages
+
+6. SANDBOX AND TEST PAGES:
+   - Module sandboxes (/wiki/Module:Sandbox)
+   - Template style sandboxes (/wiki/Template:TemplateStyles_sandbox)
+
+REASON FOR RESTRICTIONS:
+These pages are restricted to prevent search engines from indexing sensitive 
+administrative discussions, protecting user privacy, preventing spam, and avoiding 
+cluttering search results with internal Wikipedia processes rather than actual 
+encyclopedia content.
+
+================================================================================
+QUESTION 2: Are there specific rules for certain user agents?
+================================================================================
+
+YES. Wikipedia has very specific rules for different user agents:
+
+1. COMPLETELY BLOCKED USER AGENTS (Disallow: /):
+   - MJ12bot (observed spamming and ignoring rate-limit responses)
+   - Mediapartners-Google (advertising-related bot)
+   - UbiCrawler, DOC, Zao (crawlers that are not desired)
+   - SiteSnagger, WebStripper, WebCopier, Fetch (site copying bots)
+   - Offline Explorer, Teleport, TeleportPro, WebZIP (entire site downloaders)
+   - HTTrack, Xenu, larbin, libwww, ZyBORG (aggressive crawlers)
+   - wget (recursive mode causes performance problems)
+   - grub-client (distributed crawler with poor behavior)
+   - k2spider, NPBot, WebReaper (non-compliant or problematic bots)
+   - Various other malicious bots (Microsoft.URL.Control, linko, download tools)
+
+2. SPECIFIC CRAWL-DELAY RULES:
+   - SemrushBot: Crawl-delay: 5 seconds
+     (Respects crawl-delay directives; Wikipedia allows it but requests 5-second delays)
+
+3. DEFAULT RULE FOR ALL OTHER BOTS (User-agent: *):
+   - ALLOWED: General article content at /wiki/Article_Name
+   - ALLOWED: /w/api.php?action=mobileview (mobile API)
+   - ALLOWED: /w/load.php? (resource loader)
+   - ALLOWED: /api/rest_v1/?doc (API documentation)
+   - ALLOWED: /w/rest.php/site/v1/sitemap (sitemap)
+   - DISALLOWED: /w/ (general wiki infrastructure)
+   - DISALLOWED: /api/ (general API)
+   - DISALLOWED: Special pages, administrative pages, deletion discussions
+
+NOTES ON BLOCKING STRATEGY:
+- Wikipedia blocks specific problem crawlers by name
+- It maintains a blacklist of bots known to ignore robots.txt or crawl too aggressively
+- Good-faith bots are welcomed but must follow the global rules
+- The file includes comments explaining why certain bots are blocked
+
+================================================================================
+REFLECTION: Why Websites Use robots.txt and Its Role in Ethical Scraping
+================================================================================
+
+Websites use robots.txt files to establish a mutually respectful agreement between 
+website owners and automated crawlers. robots.txt serves as a public communication 
+tool that specifies which content may be crawled and which should be avoided, allowing 
+websites to protect sensitive data, reduce server load, and prevent indexed content 
+that harms user privacy or experience. By respecting robots.txt directives, web scrapers 
+demonstrate ethical behavior and help maintain the health of the internet ecosystem—
+crawlers that ignore these guidelines can overload servers, expose private information, 
+or create duplicate content that clutters search results. Ultimately, robots.txt promotes 
+ethical scraping by creating transparency: websites clearly state their boundaries, and 
+responsible developers honor those boundaries, ensuring that web automation benefits 
+both users and website owners rather than causing harm.
+
+================================================================================
+CONCLUSION
+================================================================================
+
+Wikipedia's robots.txt file is a comprehensive example of how to balance open access 
+with responsible resource management. It welcomes legitimate bots and search engines 
+while aggressively blocking known problematic crawlers. The file demonstrates that 
+ethical web scraping requires:
+
+1. Reading and understanding robots.txt before accessing a site
+2. Respecting all Disallow directives for your user agent
+3. Implementing appropriate delays between requests
+4. Using a clear, identifiable User-Agent header
+5. Stopping or adjusting behavior if the website returns rate-limit errors
+
+Ethical web scrapers are partners with website owners, not adversaries.
